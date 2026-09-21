@@ -1,0 +1,268 @@
+{
+  "destination": "Goa",
+  "days": 3,
+  "headline": "A slow, coastal rhythm through Goa",
+  "days_plan": [
+    {
+      "day": 1,
+      "title": "North Goa light",
+      "theme": "Beaches and an easy first evening",
+      "items": [
+        {
+          "id": "d1-1",
+          "name": "Calangute Beach",
+          "type": "place",
+          "category": "Beaches",
+          "time": "9:00 AM",
+          "duration": "2 hours",
+          "cost": 0,
+          "rating": 4.4,
+          "location": "North Goa",
+          "description": "Start on a wide shoreline with room to walk, swim, and settle into Goa's pace without a packed schedule.",
+          "image": "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=1200&q=80"
+        },
+        {
+          "id": "d1-2",
+          "name": "Souza Lobo",
+          "type": "restaurant",
+          "category": "Food",
+          "time": "12:00 PM",
+          "duration": "1.5 hours",
+          "cost": 900,
+          "rating": 4.3,
+          "location": "Calangute",
+          "description": "A long-running beachfront kitchen. Vegetarian thalis and Goan vegetable curries sit comfortably next to seafood plates.",
+          "image": "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1200&q=80",
+          "diet": ["Vegetarian", "Non-vegetarian"]
+        },
+        {
+          "id": "d1-3",
+          "name": "Fort Aguada",
+          "type": "place",
+          "category": "Culture",
+          "time": "3:30 PM",
+          "duration": "1.5 hours",
+          "cost": 0,
+          "rating": 4.6,
+          "location": "Candolim",
+          "description": "A 17th-century Portuguese fort above the Arabian Sea. Short walks, lighthouse views, and a clear sense of Goa's layered history.",
+          "image": "https://images.unsplash.com/photo-1593693397690-362cb9666fc2?auto=format&fit=crop&w=1200&q=80"
+        },
+        {
+          "id": "d1-4",
+          "name": "Baga sunset stroll",
+          "type": "activity",
+          "category": "Beaches",
+          "time": "6:00 PM",
+          "duration": "1 hour",
+          "cost": 0,
+          "rating": 4.5,
+          "location": "Baga",
+          "description": "An unhurried walk along the water as the light drops. Optional snack stop at a shack if you want to linger.",
+          "image": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "title": "Old Goa and Panjim",
+      "theme": "Churches, painted lanes, and a riverside evening",
+      "items": [
+        {
+          "id": "d2-1",
+          "name": "Basilica of Bom Jesus",
+          "type": "place",
+          "category": "Culture",
+          "time": "9:00 AM",
+          "duration": "1 hour",
+          "cost": 0,
+          "rating": 4.7,
+          "location": "Old Goa",
+          "description": "A UNESCO baroque church that holds the relics of St. Francis Xavier. Quiet interiors, carved wood, and a slower morning.",
+          "image": "https://images.unsplash.com/photo-1626074961596-cab914d53432?auto=format&fit=crop&w=1200&q=80"
+        },
+        {
+          "id": "d2-2",
+          "name": "Se Cathedral",
+          "type": "place",
+          "category": "Culture",
+          "time": "10:30 AM",
+          "duration": "45 minutes",
+          "cost": 0,
+          "rating": 4.6,
+          "location": "Old Goa",
+          "description": "One of Asia's largest churches, a short walk from the Basilica. Golden altars and a vast nave that rewards unhurried looking.",
+          "image": "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?auto=format&fit=crop&w=1200&q=80"
+        },
+        {
+          "id": "d2-3",
+          "name": "Fontainhas walking circuit",
+          "type": "activity",
+          "category": "Culture",
+          "time": "12:30 PM",
+          "duration": "2 hours",
+          "cost": 400,
+          "rating": 4.8,
+          "location": "Panjim",
+          "description": "Latin Quarter lanes in ochre, indigo, and terracotta. Small galleries, tiled houses, and bakeries between the slopes.",
+          "image": "https://images.unsplash.com/photo-1582510003544-4d00b8af11ee?auto=format&fit=crop&w=1200&q=80"
+        },
+        {
+          "id": "d2-4",
+          "name": "Viva Panjim",
+          "type": "restaurant",
+          "category": "Food",
+          "time": "3:00 PM",
+          "duration": "1.5 hours",
+          "cost": 850,
+          "rating": 4.5,
+          "location": "Fontainhas",
+          "description": "Goan home cooking in a heritage house. Strong vegetarian plates, coconut gravies, and a calm courtyard table.",
+          "image": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80",
+          "diet": ["Vegetarian", "Non-vegetarian", "Vegan"]
+        },
+        {
+          "id": "d2-5",
+          "name": "Mandovi riverside evening",
+          "type": "activity",
+          "category": "Nightlife",
+          "time": "6:30 PM",
+          "duration": "1.5 hours",
+          "cost": 1200,
+          "rating": 4.2,
+          "location": "Panjim",
+          "description": "A dusk cruise on the Mandovi with city lights coming on. Optional if you prefer to keep the evening on land.",
+          "image": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "title": "South Goa hush",
+      "theme": "Quieter water, a spice garden, and a last meal",
+      "items": [
+        {
+          "id": "d3-1",
+          "name": "Palolem Beach",
+          "type": "place",
+          "category": "Beaches",
+          "time": "9:30 AM",
+          "duration": "2.5 hours",
+          "cost": 0,
+          "rating": 4.7,
+          "location": "South Goa",
+          "description": "A crescent bay that feels slower than the north. Swim, read, or walk the curve of coconut shade.",
+          "image": "https://images.unsplash.com/photo-1587922546307-776227941871?auto=format&fit=crop&w=1200&q=80"
+        },
+        {
+          "id": "d3-2",
+          "name": "Sahakari Spice Farm",
+          "type": "activity",
+          "category": "Nature",
+          "time": "1:00 PM",
+          "duration": "2 hours",
+          "cost": 500,
+          "rating": 4.4,
+          "location": "Ponda",
+          "description": "A guided walk through pepper, nutmeg, and cocoa. Includes a simple vegetarian plantation lunch on most visits.",
+          "image": "https://images.unsplash.com/photo-1466692476866-aef814aa387a?auto=format&fit=crop&w=1200&q=80"
+        },
+        {
+          "id": "d3-3",
+          "name": "Anjuna flea & boutiques",
+          "type": "place",
+          "category": "Shopping",
+          "time": "4:30 PM",
+          "duration": "1.5 hours",
+          "cost": 700,
+          "rating": 4.1,
+          "location": "Anjuna",
+          "description": "Textiles, ceramics, and small-batch crafts. Easy to skip if you would rather stay by the water.",
+          "image": "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=80"
+        },
+        {
+          "id": "d3-4",
+          "name": "Gunpowder",
+          "type": "restaurant",
+          "category": "Food",
+          "time": "7:30 PM",
+          "duration": "1.5 hours",
+          "cost": 1100,
+          "rating": 4.6,
+          "location": "Assagao",
+          "description": "South Indian flavours in a garden setting. Excellent vegetable curries and a last-night table that does not rush you.",
+          "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80",
+          "diet": ["Vegetarian", "Non-vegetarian", "Vegan"]
+        }
+      ]
+    }
+  ],
+  "extras": [
+    {
+      "id": "ex-beach-1",
+      "name": "Morjim Beach",
+      "type": "place",
+      "category": "Beaches",
+      "time": "11:00 AM",
+      "duration": "2 hours",
+      "cost": 0,
+      "rating": 4.5,
+      "location": "North Goa",
+      "description": "A quieter stretch known for open sky and a slower shoreline. Swap this in when you want more sea and less crowd.",
+      "image": "https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?auto=format&fit=crop&w=1200&q=80"
+    },
+    {
+      "id": "ex-culture-1",
+      "name": "Reis Magos Fort",
+      "type": "place",
+      "category": "Culture",
+      "time": "4:00 PM",
+      "duration": "1.5 hours",
+      "cost": 50,
+      "rating": 4.6,
+      "location": "Reis Magos",
+      "description": "A restored riverside fort with galleries and estuary views. A calmer cultural stop than the busier north beaches.",
+      "image": "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=1200&q=80"
+    },
+    {
+      "id": "ex-food-1",
+      "name": "Café Bodega",
+      "type": "restaurant",
+      "category": "Food",
+      "time": "1:00 PM",
+      "duration": "1 hour",
+      "cost": 650,
+      "rating": 4.4,
+      "location": "Panjim",
+      "description": "Light plates, salads, and a vegetarian-friendly cafe menu if you want another unhurried meal in the city.",
+      "image": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=1200&q=80",
+      "diet": ["Vegetarian", "Vegan", "Non-vegetarian"]
+    },
+    {
+      "id": "ex-wellness-1",
+      "name": "Beach yoga hour",
+      "type": "activity",
+      "category": "Wellness",
+      "time": "7:30 AM",
+      "duration": "1 hour",
+      "cost": 400,
+      "rating": 4.5,
+      "location": "Mandrem",
+      "description": "A short morning session on the sand. Built for a relaxed itinerary that wants space rather than another sightseeing stop.",
+      "image": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=1200&q=80"
+    },
+    {
+      "id": "ex-adventure-1",
+      "name": "Dudhsagar viewpoint trail",
+      "type": "activity",
+      "category": "Adventure",
+      "time": "8:00 AM",
+      "duration": "5 hours",
+      "cost": 2500,
+      "rating": 4.6,
+      "location": "Bhagwan Mahavir Wildlife Sanctuary",
+      "description": "A longer, costlier day trip to the waterfall belt. Easy to drop if you ask SETUVIA to remove expensive activities.",
+      "image": "https://images.unsplash.com/photo-1432405972473-5a8ec47364c5?auto=format&fit=crop&w=1200&q=80"
+    }
+  ]
+}
