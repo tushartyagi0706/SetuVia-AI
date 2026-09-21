@@ -119,17 +119,20 @@ async def generate_grounded_itinerary_with_gemini(
 
         for model_name in models_to_try:
             try:
-                # Offload blocking synchronous GenAI SDK call to a worker thread
-                response = await asyncio.to_thread(
-                    client.models.generate_content,
-                    model=model_name,
-                    contents=prompt
+                # Offload blocking synchronous GenAI SDK call to a worker thread with 7-second timeout
+                response = await asyncio.wait_for(
+                    asyncio.to_thread(
+                        client.models.generate_content,
+                        model=model_name,
+                        contents=prompt
+                    ),
+                    timeout=7.0
                 )
                 if response and response.text:
                     logger.info(f"Gemini generation succeeded using model '{model_name}'")
                     break
             except Exception as model_err:
-                logger.debug(f"Model '{model_name}' generation attempt error: {model_err}")
+                logger.warning(f"Model '{model_name}' generation error or timeout: {model_err}")
                 continue
 
         if not response or not response.text:
@@ -149,6 +152,7 @@ async def generate_grounded_itinerary_with_gemini(
         data = json.loads(text)
         candidate_map = {c.item_id: c for c in candidates}
         if isinstance(data, dict) and "days" in data:
+            from app.engine.itinerary import enrich_slot_with_explanation
             for day in data.get("days", []):
                 for slot in day.get("slots", []):
                     item_id = slot.get("item_id")
@@ -159,8 +163,15 @@ async def generate_grounded_itinerary_with_gemini(
                         if not slot.get("image_source"):
                             slot["image_source"] = cand.details.get("image_source")
 
+                        exp_data = enrich_slot_with_explanation(cand, prefs, selected_stay)
+                        slot["distance_from_stay_km"] = exp_data["distance_from_stay_km"]
+                        slot["recommendation_reason"] = exp_data["recommendation_reason"]
+                        slot["reasons"] = exp_data["reasons"]
+                        slot["why_recommended"] = exp_data["why_recommended"]
+
         return ItineraryResponse(**data)
 
     except Exception as e:
         logger.error(f"Gemini LLM generation failed: {e}. Falling back to deterministic engine.")
         return None
+

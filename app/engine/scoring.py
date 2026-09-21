@@ -57,7 +57,75 @@ def score_candidate_poi(
             score += 15.0
         elif dist <= 15.0:
             score += 8.0
-        elif dist <= 25.0:
-            score += 3.0
-
     return round(score, 2)
+
+
+def generate_why_recommended_explanation(
+    candidate: CandidateItem,
+    prefs: Optional[TripPreferencesRequest] = None,
+    selected_stay: Optional[StayDomain] = None
+) -> dict:
+    """Generate structured recommendation reasons grounded in actual backend data.
+
+    Returns dict with keys:
+    - distance_from_stay_km: float | None
+    - interest_match: str | None
+    - budget_suitability: str | None
+    - pace_suitability: str | None
+    - reasons: list[str]
+    """
+    reasons = []
+
+    # 1. Distance from stay calculation
+    dist_km = None
+    if selected_stay and selected_stay.latitude is not None and selected_stay.longitude is not None:
+        dist_raw = get_stay_distance_to_candidate(selected_stay, candidate)
+        if dist_raw != float('inf'):
+            dist_km = round(dist_raw, 1)
+            stay_name = selected_stay.stay_name.split()[0] if selected_stay.stay_name else "stay"
+            reasons.append(f"{dist_km} km from your stay ({stay_name})")
+
+    # 2. Interest match
+    interest_match_str = None
+    if prefs and prefs.interests:
+        user_interests_lower = [i.lower() for i in prefs.interests]
+        cat_lower = (candidate.category or "").lower()
+        matched = [
+            interest for interest in user_interests_lower
+            if interest in cat_lower or cat_lower in interest
+        ]
+        if matched:
+            interest_name = matched[0].capitalize()
+            interest_match_str = f"Matches your {interest_name} interest"
+            reasons.append(interest_match_str)
+
+    # 3. Budget suitability
+    budget_str = None
+    cost = candidate.cost if candidate.cost is not None else 0.0
+    if cost == 0:
+        budget_str = "Free entry / Zero cost"
+        reasons.append(budget_str)
+    elif prefs and prefs.budget > 0:
+        daily_budget = prefs.budget / max(1, prefs.days)
+        if cost <= daily_budget * 0.3:
+            budget_str = "Fits well within daily budget"
+            reasons.append(budget_str)
+        elif cost <= daily_budget:
+            budget_str = "Suitable for your trip budget"
+            reasons.append(budget_str)
+
+    # 4. Pace suitability
+    pace_str = None
+    if prefs and prefs.travel_pace:
+        pace_val = prefs.travel_pace.value if hasattr(prefs.travel_pace, "value") else str(prefs.travel_pace)
+        pace_str = f"Suitable for your {pace_val} travel pace"
+        reasons.append(pace_str)
+
+    return {
+        "distance_from_stay_km": dist_km,
+        "interest_match": interest_match_str,
+        "budget_suitability": budget_str,
+        "pace_suitability": pace_str,
+        "reasons": reasons
+    }
+

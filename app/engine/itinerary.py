@@ -1,9 +1,33 @@
 from typing import List, Dict, Any, Optional
 from app.models.requests import TripPreferencesRequest, TravelPaceEnum
-from app.models.responses import CandidateItem, TimeSlotItem, ItineraryDay, ItineraryResponse
+from app.models.responses import CandidateItem, TimeSlotItem, ItineraryDay, ItineraryResponse, WhyRecommended
 from app.models.domain import StayDomain
 from app.engine.distance import haversine_distance_km
 from app.engine.costs import calculate_slot_cost, compute_itinerary_cost_breakdown
+from app.engine.scoring import generate_why_recommended_explanation
+
+
+def enrich_slot_with_explanation(
+    cand: CandidateItem,
+    prefs: TripPreferencesRequest,
+    selected_stay: Optional[StayDomain] = None
+) -> dict:
+    """Helper to generate explanation fields for a candidate item."""
+    exp = generate_why_recommended_explanation(cand, prefs, selected_stay)
+    why_rec = WhyRecommended(
+        distance_from_stay_km=exp["distance_from_stay_km"],
+        interest_match=exp["interest_match"],
+        budget_suitability=exp["budget_suitability"],
+        pace_suitability=exp["pace_suitability"],
+        reasons=exp["reasons"]
+    )
+    primary_reason = exp["reasons"][0] if exp["reasons"] else "Recommended based on your preferences"
+    return {
+        "distance_from_stay_km": exp["distance_from_stay_km"],
+        "recommendation_reason": primary_reason,
+        "reasons": exp["reasons"],
+        "why_recommended": why_rec
+    }
 
 
 def build_deterministic_itinerary(
@@ -49,6 +73,7 @@ def build_deterministic_itinerary(
             p = places[p_idx]
             p_idx += 1
             slot_cost = calculate_slot_cost("place", p.cost, 1)
+            exp_data = enrich_slot_with_explanation(p, prefs, selected_stay)
             slot_item = TimeSlotItem(
                 slot="Morning",
                 item_type="place",
@@ -62,7 +87,8 @@ def build_deterministic_itinerary(
                 longitude=p.longitude,
                 notes_or_tips="Explore during cool morning hours.",
                 image_url=p.details.get("image_url") or p.details.get("image"),
-                image_source=p.details.get("image_source")
+                image_source=p.details.get("image_source"),
+                **exp_data
             )
             day_slots.append(slot_item)
             all_slots.append(slot_item)
@@ -72,6 +98,7 @@ def build_deterministic_itinerary(
             r = restaurants[r_idx]
             r_idx += 1
             slot_cost = calculate_slot_cost("restaurant", r.cost, 1)
+            exp_data = enrich_slot_with_explanation(r, prefs, selected_stay)
             slot_item = TimeSlotItem(
                 slot="Lunch",
                 item_type="restaurant",
@@ -85,7 +112,8 @@ def build_deterministic_itinerary(
                 longitude=r.longitude,
                 notes_or_tips="Enjoy local authentic cuisine.",
                 image_url=r.details.get("image_url") or r.details.get("image"),
-                image_source=r.details.get("image_source")
+                image_source=r.details.get("image_source"),
+                **exp_data
             )
             day_slots.append(slot_item)
             all_slots.append(slot_item)
@@ -96,6 +124,7 @@ def build_deterministic_itinerary(
             a_idx += 1
             slot_cost = calculate_slot_cost("activity", a.cost, 1)
             duration = float(a.details.get("duration_hours") or 1.5)
+            exp_data = enrich_slot_with_explanation(a, prefs, selected_stay)
             slot_item = TimeSlotItem(
                 slot="Afternoon",
                 item_type="activity",
@@ -109,7 +138,8 @@ def build_deterministic_itinerary(
                 longitude=a.longitude,
                 notes_or_tips="Participate in coastal activities.",
                 image_url=a.details.get("image_url") or a.details.get("image"),
-                image_source=a.details.get("image_source")
+                image_source=a.details.get("image_source"),
+                **exp_data
             )
             day_slots.append(slot_item)
             all_slots.append(slot_item)
@@ -119,6 +149,7 @@ def build_deterministic_itinerary(
             p = places[p_idx]
             p_idx += 1
             slot_cost = calculate_slot_cost("place", p.cost, 1)
+            exp_data = enrich_slot_with_explanation(p, prefs, selected_stay)
             slot_item = TimeSlotItem(
                 slot="Evening",
                 item_type="place",
@@ -132,7 +163,8 @@ def build_deterministic_itinerary(
                 longitude=p.longitude,
                 notes_or_tips="Relax and enjoy sunset views.",
                 image_url=p.details.get("image_url") or p.details.get("image"),
-                image_source=p.details.get("image_source")
+                image_source=p.details.get("image_source"),
+                **exp_data
             )
             day_slots.append(slot_item)
             all_slots.append(slot_item)
@@ -159,3 +191,4 @@ def build_deterministic_itinerary(
         narrative_summary=f"A personalized {prefs.travel_pace.value.lower()} {prefs.days}-day itinerary in Goa{stay_note}.",
         days=days
     )
+
