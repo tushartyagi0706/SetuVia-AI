@@ -1,4 +1,5 @@
 import BudgetInsights from "../components/BudgetInsights.jsx";
+import StayAnchorMap from "../components/StayAnchorMap.jsx";
 import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import DaySelector from "../components/DaySelector.jsx";
@@ -221,6 +222,7 @@ export default function ItineraryPage() {
             itinerary={itinerary}
             onTravelersChange={updateTravelers}
           />
+          <StayAnchorMap selectedStay={activeStay} dayItems={day?.items || []} />
           <BudgetInsights itinerary={itinerary} />
         </div>
       </div>

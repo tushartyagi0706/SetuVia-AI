@@ -8,11 +8,16 @@ import PreferencesPage from "./pages/PreferencesPage.jsx";
 import GeneratingPage from "./pages/GeneratingPage.jsx";
 import ItineraryPage from "./pages/ItineraryPage.jsx";
 import StayDiscoveryPage from "./pages/StayDiscoveryPage.jsx";
+import HostDashboardPage from "./pages/host/HostDashboardPage.jsx";
+import HostPropertyPage from "./pages/host/HostPropertyPage.jsx";
+import HostPricingPage from "./pages/host/HostPricingPage.jsx";
+import HostListingPage from "./pages/host/HostListingPage.jsx";
+import HostAssistantPage from "./pages/host/HostAssistantPage.jsx";
 import SplashScreen from "./components/SplashScreen.jsx";
 
 export default function App() {
   const location = useLocation();
-  const hideFooter = location.pathname === "/generating";
+  const hideFooter = location.pathname === "/generating" || location.pathname.startsWith("/host");
 
   const [showSplash, setShowSplash] = useState(() => {
     return !sessionStorage.getItem("hasSeenSplash");
@@ -41,6 +46,14 @@ export default function App() {
             <Route path="/plan" element={<PreferencesPage />} />
             <Route path="/generating" element={<GeneratingPage />} />
             <Route path="/itinerary" element={<ItineraryPage />} />
+            
+            {/* HOST GROWTH TOOLKIT ROUTES */}
+            <Route path="/host" element={<HostDashboardPage />} />
+            <Route path="/host/property" element={<HostPropertyPage />} />
+            <Route path="/host/pricing" element={<HostPricingPage />} />
+            <Route path="/host/listing" element={<HostListingPage />} />
+            <Route path="/host/assistant" element={<HostAssistantPage />} />
+
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

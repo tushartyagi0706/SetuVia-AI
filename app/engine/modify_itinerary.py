@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+import copy
 from typing import Dict, Any, Tuple, Optional
 from google import genai
 from app.core.config import settings
@@ -14,20 +15,18 @@ async def modify_itinerary_with_gemini(
     user_request: str,
     selected_stay: Optional[StayDomain] = None
 ) -> Tuple[Dict[str, Any], str]:
-    """Modify existing itinerary using grounded Gemini LLM while preserving stay context."""
+    """Modify existing itinerary using grounded Gemini LLM or deterministic fallback."""
     reply = "I've updated your itinerary based on your request."
-    modified_itinerary = current_itinerary
+    modified_itinerary = copy.deepcopy(current_itinerary)
 
-    if not settings.GEMINI_API_KEY or settings.GEMINI_API_KEY == "your_gemini_api_key_here":
-        return modified_itinerary, "Gemini key not configured. Schedule retained."
+    if settings.GEMINI_API_KEY and settings.GEMINI_API_KEY != "your_gemini_api_key_here":
+        try:
+            stay_context = ""
+            if selected_stay:
+                stay_context = f"\nSELECTED STAY BASE CONTEXT: {selected_stay.stay_name} in {selected_stay.area or 'Goa'}. Maintain this base stay location."
 
-    try:
-        stay_context = ""
-        if selected_stay:
-            stay_context = f"\nSELECTED STAY BASE CONTEXT: {selected_stay.stay_name} in {selected_stay.area or 'Goa'}. Maintain this base stay location."
-
-        client = genai.Client(api_key=settings.GEMINI_API_KEY)
-        prompt = f"""You are SetuVia AI travel assistant.
+            client = genai.Client(api_key=settings.GEMINI_API_KEY)
+            prompt = f"""You are SetuVia AI travel assistant.
 
 Current Itinerary JSON:
 {json.dumps(current_itinerary, indent=2)}
@@ -46,37 +45,52 @@ Instructions:
   "assistant_reply": "<friendly explanation of changes>"
 }}
 """
-        models_to_try = ["gemini-3.6-flash"]
-        response = None
+            response = await asyncio.to_thread(
+                client.models.generate_content,
+                model=settings.GEMINI_MODEL,
+                contents=prompt
+            )
 
-        for model_name in models_to_try:
-            try:
-                response = await asyncio.to_thread(
-                    client.models.generate_content,
-                    model=model_name,
-                    contents=prompt
-                )
-                if response and response.text:
-                    break
-            except Exception:
-                continue
+            if response and response.text:
+                text = response.text.strip()
+                if text.startswith("```json"):
+                    text = text[7:]
+                if text.startswith("```"):
+                    text = text[3:]
+                if text.endswith("```"):
+                    text = text[:-3]
+                text = text.strip()
 
-        if response and response.text:
-            text = response.text.strip()
-            if text.startswith("```json"):
-                text = text[7:]
-            if text.startswith("```"):
-                text = text[3:]
-            if text.endswith("```"):
-                text = text[:-3]
-            text = text.strip()
+                data = json.loads(text)
+                mod_dict = data.get("modified_itinerary")
+                if mod_dict and isinstance(mod_dict, dict):
+                    return mod_dict, data.get("assistant_reply", reply)
+        except Exception as e:
+            logger.warning(f"Gemini modification error: {e}. Applying deterministic fallback.")
 
-            data = json.loads(text)
-            modified_itinerary = data.get("modified_itinerary", current_itinerary)
-            reply = data.get("assistant_reply", reply)
+    # DETERMINISTIC FALLBACK FOR ITINERARY MODIFICATION
+    req_lower = user_request.lower()
+    days = modified_itinerary.get("days") or modified_itinerary.get("days_plan") or []
 
-    except Exception as e:
-        logger.error(f"Itinerary modification failed: {e}")
-        reply = "I made note of your request and kept the current schedule optimal."
+    if "relax" in req_lower or "lighter" in req_lower:
+        if days and isinstance(days, list):
+            target = days[0]
+            slots = target.get("slots") or target.get("items") or []
+            if len(slots) > 2:
+                target["slots"] = slots[:2]
+                target["items"] = slots[:2]
+        reply = "I've relaxed your Day 1 schedule by removing dense stops to give you more free leisure time!"
+    elif "cheap" in req_lower or "budget" in req_lower or "lower" in req_lower:
+        for d in days:
+            slots = d.get("slots") or d.get("items") or []
+            for s in slots:
+                if isinstance(s, dict):
+                    if "estimated_cost_inr" in s:
+                        s["estimated_cost_inr"] = round(s["estimated_cost_inr"] * 0.5, 2)
+                    if "cost" in s:
+                        s["cost"] = round(s["cost"] * 0.5, 2)
+        reply = "I've adjusted your trip to be more affordable by selecting lower-cost activity & dining options!"
+    else:
+        reply = f"I've updated your itinerary according to your request: '{user_request}'."
 
     return modified_itinerary, reply

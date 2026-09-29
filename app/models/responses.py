@@ -105,6 +105,9 @@ class OptimizeBudgetResponse(BaseModel):
 class AskSetuChatResponse(BaseModel):
     """Structured response model for Ask Setu travel concierge."""
     reply: str
+    intent: Optional[str] = Field(default="general_travel_query", description="Detected user intent")
+    itinerary_modified: bool = Field(default=False, description="True ONLY if itinerary was actually modified")
+    modified_itinerary: Optional[Dict[str, Any]] = Field(default=None, description="Updated itinerary if modified")
     suggestions: List[str] = Field(default_factory=list)
     context_used: Dict[str, bool] = Field(default_factory=dict)
 

@@ -214,3 +214,15 @@ def test_ask_setu_chat_request_validation():
     )
     assert req.message == "Find food options near my stay"
     assert req.selected_stay["stay_id"] == "S001"
+
+
+@pytest.mark.asyncio
+async def test_concierge_casual_small_talk():
+    res = await generate_concierge_chat_response(
+        db=None,
+        message="hi bhai kya haal hai?",
+        selected_stay={"stay_id": "S001", "stay_name": "Panaji Residency"}
+    )
+    assert "Setu" in res.reply or "bhai" in res.reply or "Goa" in res.reply
+    assert len(res.suggestions) >= 2
+

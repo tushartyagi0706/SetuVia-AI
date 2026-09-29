@@ -12,7 +12,7 @@ import {
   updateActivityTime,
   updateTransportation,
   regenerateSingleDayPlan,
- 
+  sendConciergeChat,
 } from "../services/itineraryService.js";
 import { optimizeDayRoute } from "../services/routeService.js";
 import mockItinerary from "../data/mockItinerary.json";
@@ -354,7 +354,7 @@ function applySavingsSuggestion(suggestion) {
 }
 
   async function requestChange(text) {
-    if (!itinerary || !text.trim() || isModifying) return;
+    if (!text.trim() || isModifying) return;
 
     const userMessage = { role: "user", text: text.trim() };
     const nextMessages = [...messages, userMessage];
@@ -363,19 +363,33 @@ function applySavingsSuggestion(suggestion) {
     setModificationError("");
 
     try {
-      const result = await modifyItinerary(itinerary, text.trim());
-      setItinerary(result.itinerary);
+      const result = await sendConciergeChat(
+        text.trim(),
+        selectedStay,
+        preferences,
+        itinerary,
+        1,
+        nextMessages
+      );
+
+      // Only update local itinerary state if backend indicated an actual modification took place
+      let nextItinerary = itinerary;
+      if (result.itinerary_modified && result.modified_itinerary) {
+        nextItinerary = result.modified_itinerary;
+        setItinerary(nextItinerary);
+      }
+
       const updatedMessages = [
         ...nextMessages,
         { role: "assistant", text: result.reply },
       ];
       setMessages(updatedMessages);
-      persist({ itinerary: result.itinerary, messages: updatedMessages });
+      persist({ itinerary: nextItinerary, messages: updatedMessages });
     } catch (error) {
       setModificationError(
         error instanceof Error
           ? error.message
-          : "We could not update your itinerary. Please try again."
+          : "We could not process your request right now. Please try again."
       );
       persist({ messages: nextMessages });
     } finally {

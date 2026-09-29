@@ -823,33 +823,51 @@ export async function generateItinerary(preferences) {
   }
 }
 
-export async function modifyItinerary(itinerary, message) {
+export async function sendConciergeChat(message, selectedStay, preferences, itinerary, currentDay, conversationHistory) {
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
   try {
-    const response = await fetch(`${API_URL}/api/v1/itinerary/modify`, {
+    const payload = {
+      message: message,
+      selected_stay: selectedStay || null,
+      preferences: preferences || null,
+      itinerary: itinerary || null,
+      current_day: currentDay || 1,
+      conversation_history: conversationHistory || []
+    };
+
+    const response = await fetch(`${API_URL}/api/v1/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        current_itinerary: itinerary,
-        user_request: message
-      })
+      body: JSON.stringify(payload)
     });
 
     if (response.ok) {
       const data = await response.json();
-      const rawModified = data.modified_itinerary || data.itinerary || data;
+      const rawModified = data.modified_itinerary;
       return {
-        itinerary: normalizeLiveItineraryResponse(rawModified, itinerary),
-        reply: data.reply || data.assistant_reply || "I've updated your itinerary based on your request."
+        reply: data.reply || "I'm here to help you navigate Goa!",
+        intent: data.intent || "general_travel_query",
+        itinerary_modified: Boolean(data.itinerary_modified),
+        modified_itinerary: rawModified ? normalizeLiveItineraryResponse(rawModified, itinerary || {}) : null,
+        suggestions: data.suggestions || []
       };
     }
   } catch (error) {
-    console.warn("Live FastAPI Modify endpoint unavailable, using fallback:", error);
+    console.warn("Live Concierge Chat API error:", error);
   }
 
-  await wait(MODIFY_DELAY_MS);
-  const result = applyMockModification(itinerary, message);
-  return { ...result, itinerary: recalculateItineraryData(result.itinerary) };
+  // Fallback when backend is unreachable
+  return {
+    reply: "Hey! Main Setu hu, aapka AI Travel Concierge. Aapka stay and trip preferences tracked hain! Kaise help karu?",
+    intent: "casual_chat",
+    itinerary_modified: false,
+    modified_itinerary: null,
+    suggestions: ["What's near my stay?", "Check budget"]
+  };
+}
+
+export async function modifyItinerary(itinerary, message) {
+  return sendConciergeChat(message, itinerary?.selected_stay || itinerary?.selectedStay, itinerary, itinerary, 1, []);
 }
 
 export function removeLocation(itinerary, dayNumber, itemId) {

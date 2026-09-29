@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Home } from "lucide-react";
 import { useState } from "react";
+import { useLanguage } from "../context/LanguageContext.jsx";
 
 const IMAGES = [
   {
@@ -46,33 +47,42 @@ function ImageWithFallback({ src, alt, fallback, className }) {
 }
 
 export default function Hero() {
+  const { t } = useLanguage();
+
   return (
     <section className="relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0 grain opacity-[0.12]" />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 pb-16 pt-6 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:pb-24 lg:pt-10">
         <div>
           <p className="text-xs uppercase tracking-[0.32em] text-copper">
-            AI-POWERED GOA TRIP CONCIERGE
+            AI-POWERED GOA TRIP CONCIERGE & HOST TOOLKIT
           </p>
           <h1 className="mt-4 max-w-xl font-display text-4xl leading-[1.12] text-ink sm:text-5xl lg:text-6xl">
-            Your journey. Your way.
+            {t("hero_title")}
           </h1>
           <p className="mt-5 max-w-lg text-base leading-relaxed text-ink-muted sm:text-lg">
-            SETUVIA shapes your Goa days around your interests, budget, pace, and the way you want to experience the coast.
+            {t("hero_subtitle")}
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+
+          <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <Link
               to="/plan"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-copper px-6 py-3.5 text-sm font-semibold text-cream transition hover:bg-copper-dark"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-copper px-6 py-3.5 text-sm font-semibold text-cream transition hover:bg-copper-dark shadow-xs"
             >
-              Plan My Trip
+              <span>{t("plan_trip")} 🚀</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
-            <p className="text-sm text-ink-soft sm:ml-2">
-              Start planning your perfect trip
-            </p>
+
+            <Link
+              to="/host"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-sand bg-paper px-6 py-3.5 text-sm font-semibold text-ink transition hover:bg-sand/60 shadow-xs"
+            >
+              <Home className="h-4 w-4 text-pine" />
+              <span>{t("for_hosts")} 🏠</span>
+            </Link>
           </div>
         </div>
+
         <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <ImageWithFallback
             src={IMAGES[0].src}

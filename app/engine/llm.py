@@ -114,7 +114,7 @@ async def generate_grounded_itinerary_with_gemini(
         client = genai.Client(api_key=settings.GEMINI_API_KEY)
         prompt = generate_grounded_itinerary_prompt(candidates, prefs, selected_stay=selected_stay)
 
-        models_to_try = ["gemini-3.6-flash"]
+        models_to_try = [settings.GEMINI_MODEL]
         response = None
 
         for model_name in models_to_try:
